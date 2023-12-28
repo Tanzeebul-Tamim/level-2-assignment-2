@@ -15,7 +15,25 @@ const createUser = async (req: Request, res: Response) => {
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: "Something went wrong! Couldn't create user",
+      message: 'Something went wrong! Failed to create user',
+      error: err,
+    });
+  }
+};
+
+const getAllUsers = async (req: Request, res: Response) => {
+  try {
+    const result = await UserServices.getAllUsersFromDB();
+
+    res.status(200).json({
+      success: true,
+      message: 'Users fetched successfully!',
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: 'Something went wrong! Failed to fetch users',
       error: err,
     });
   }
@@ -23,4 +41,5 @@ const createUser = async (req: Request, res: Response) => {
 
 export const UserControllers = {
   createUser,
+  getAllUsers,
 };
