@@ -12,10 +12,11 @@ const createUser = async (req: Request, res: Response) => {
       message: 'User created successfully!',
       data: result,
     });
-  } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: 'Something went wrong! Failed to create user',
+      message: err.message || 'Something went wrong! Failed to create user',
       error: err,
     });
   }
@@ -30,10 +31,31 @@ const getAllUsers = async (req: Request, res: Response) => {
       message: 'Users fetched successfully!',
       data: result,
     });
-  } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
     res.status(500).json({
       success: false,
-      message: 'Something went wrong! Failed to fetch users',
+      message: err.message || 'Something went wrong! Failed to fetch users',
+      error: err,
+    });
+  }
+};
+
+const getSingleUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const result = await UserServices.getSingleUserFromDB(parseInt(userId));
+
+    res.status(200).json({
+      success: true,
+      message: 'User fetched successfully!',
+      data: result,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || 'Something went wrong! Failed to fetch users',
       error: err,
     });
   }
@@ -42,4 +64,5 @@ const getAllUsers = async (req: Request, res: Response) => {
 export const UserControllers = {
   createUser,
   getAllUsers,
+  getSingleUser,
 };
