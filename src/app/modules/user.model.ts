@@ -20,9 +20,9 @@ const fullNameSchema = new Schema<TName>(
       required: [true, 'Last name is a required field'],
       validate: {
         validator: function (value: string) {
-          const lastName =
+          const lastNameStr =
             value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-          return lastName === value;
+          return lastNameStr === value;
         },
         message: "{VALUE} doesn't follow the supported capitalized format",
       },
