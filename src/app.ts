@@ -1,9 +1,14 @@
+import cors from 'cors';
 import express, { Application } from 'express';
-const port = 3000;
+import { UserRoutes } from './app/modules/user/user.route';
+
 const app: Application = express();
 
-app.listen(port, () => {
-  console.log(`Your app, Assignment-2 is listening on port ${port}`);
-});
+// Parsers
+app.use(express.json());
+app.use(cors());
+
+// Application routes
+app.use('/api/users', UserRoutes);
 
 export default app;
