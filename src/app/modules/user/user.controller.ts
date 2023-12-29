@@ -11,10 +11,21 @@ const createUser = async (req: Request, res: Response) => {
 
     const result = await UserServices.createUserIntoDB(zodParsedData); // Calling service function to send the data
 
+    const filteredResult = {
+      userId: result.userId,
+      username: result.username,
+      fullName: result.fullName,
+      age: result.age,
+      email: result.email,
+      isActive: result.isActive,
+      hobbies: result.hobbies,
+      address: result.address,
+    };
+
     res.status(200).json({
       success: true,
       message: 'User created successfully!',
-      data: result,
+      data: filteredResult,
     });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
@@ -48,7 +59,12 @@ const getAllUsers = async (req: Request, res: Response) => {
 const getSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const result = await UserServices.getSingleUserFromDB(parseInt(userId));
+    const parsedUserId = parseInt(userId);
+    const result = await UserServices.getSingleUserFromDB(parsedUserId);
+
+    if (!result) {
+      throw new Error(`User with ID ${userId} not found`);
+    }
 
     res.status(200).json({
       success: true,

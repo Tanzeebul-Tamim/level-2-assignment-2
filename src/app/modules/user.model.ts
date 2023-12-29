@@ -1,5 +1,13 @@
 import { Schema, model } from 'mongoose';
-import { TAddress, TName, TOrders, TUser } from './user/user.interface';
+import bcrypt from 'bcrypt';
+import {
+  TAddress,
+  TName,
+  TOrders,
+  TUser,
+  UserModel,
+} from './user/user.interface';
+import config from '../config';
 
 const fullNameSchema = new Schema<TName>(
   {
@@ -67,7 +75,7 @@ const orderSchema = new Schema<TOrders>(
   { _id: false },
 );
 
-const userSchema = new Schema<TUser>(
+const userSchema = new Schema<TUser, UserModel>(
   {
     userId: {
       type: Number,
@@ -116,4 +124,23 @@ const userSchema = new Schema<TUser>(
   { versionKey: false },
 );
 
-export const UserModel = model<TUser>('User', userSchema);
+// Docs with virtual fields
+// interface IUserDoc extends TUser, Document {
+  
+// }
+
+// Pre save middleware
+userSchema.pre('save', async function (next) {
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+  const user = this;
+  user.password = await bcrypt.hash(user.password, Number(config.salt_rounds));
+  next();
+});
+
+// Creating a custom static method
+userSchema.statics.doesUserExists = async function (id: number) {
+  const existingUser = await User.findOne({ userId: id });
+  return existingUser;
+};
+
+export const User = model<TUser, UserModel>('User', userSchema);

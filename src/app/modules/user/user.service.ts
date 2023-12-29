@@ -1,18 +1,21 @@
-import { UserModel } from '../user.model';
+import { User } from '../user.model';
 import { TUser } from './user.interface';
 
 const createUserIntoDB = async (user: TUser) => {
-  const result = await UserModel.create(user);
+  if (await User.doesUserExists(user.userId)) {
+    throw new Error('User Already Exists');
+  }
+  const result = await User.create(user);
   return result;
 };
 
 const getAllUsersFromDB = async () => {
-  const result = await UserModel.find();
+  const result = await User.find().select('-userId -password -isActive -hobbies -orders -_id');
   return result;
 };
 
 const getSingleUserFromDB = async (id: number) => {
-  const result = await UserModel.findOne({ userId: id });
+  const result = await User.findOne({ userId: id }).select('-password -orders -_id');
   return result;
 };
 

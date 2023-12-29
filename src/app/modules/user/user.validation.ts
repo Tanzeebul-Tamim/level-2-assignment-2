@@ -42,11 +42,12 @@ const userValidationSchema = z.object({
   username: z
     .string()
     .min(1)
-    .max(10, { message: 'Username cannot be longer than 10 characters' })
+    .max(15, { message: 'Username cannot be longer than 15 characters' })
     .trim(),
   password: z
     .string()
-    .min(4, { message: 'Password must be at least 4 characters long' }),
+    .min(4, { message: 'Password must be at least 4 characters long' })
+    .max(20, { message: 'Password cannot be longer than 20 characters' }),
   fullName: fullNameValidationSchema,
   age: z.number(),
   email: z
