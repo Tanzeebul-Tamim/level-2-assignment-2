@@ -124,11 +124,6 @@ const userSchema = new Schema<TUser, UserModel>(
   { versionKey: false },
 );
 
-// Docs with virtual fields
-// interface IUserDoc extends TUser, Document {
-  
-// }
-
 // Pre save middleware
 userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias

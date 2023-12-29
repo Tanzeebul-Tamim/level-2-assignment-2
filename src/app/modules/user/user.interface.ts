@@ -30,6 +30,9 @@ export type TUser = {
   orders?: TOrders[];
 };
 
+// For updating users
+export type UpdateFields = Partial<Record<keyof TUser, TUser[keyof TUser]>>;
+
 // For creating static
 export interface UserModel extends Model<TUser> {
   // eslint-disable-next-line no-unused-vars

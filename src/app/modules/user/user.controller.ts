@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { UserServices } from './user.service';
 import userValidationSchema from './user.validation';
+import { UpdateFields } from './user.interface';
 
 const createUser = async (req: Request, res: Response) => {
   try {
@@ -63,7 +64,14 @@ const getSingleUser = async (req: Request, res: Response) => {
     const result = await UserServices.getSingleUserFromDB(parsedUserId);
 
     if (!result) {
-      throw new Error(`User with ID ${userId} not found`);
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
     }
 
     res.status(200).json({
@@ -81,8 +89,46 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
+const updateUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const parsedUserId = parseInt(userId);
+    const updateFields: UpdateFields = req.body;
+    const result = await UserServices.updateUserFieldsFromDB(
+      parsedUserId,
+      updateFields,
+    );
+    const user = await UserServices.getSingleUserFromDB(parsedUserId);
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found!',
+        },
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'User updated successfully!',
+        data: user,
+      });
+    }
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || 'Something went wrong! Failed to fetch users',
+      error: err,
+    });
+  }
+};
+
 export const UserControllers = {
   createUser,
   getAllUsers,
   getSingleUser,
+  updateUser,
 };
