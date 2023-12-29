@@ -3,10 +3,10 @@ import { UserServices } from './user.service';
 import userValidationSchema from './user.validation';
 import { UpdateFields } from './user.interface';
 
+// Create an user
 const createUser = async (req: Request, res: Response) => {
   try {
     const user = req.body;
-
     // Data validation using zod
     const zodParsedData = userValidationSchema.parse(user);
 
@@ -33,11 +33,14 @@ const createUser = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: err.message || 'Something went wrong! Failed to create user',
-      error: err,
+      error: {
+        description: err.message,
+      },
     });
   }
 };
 
+// Get all users
 const getAllUsers = async (req: Request, res: Response) => {
   try {
     const result = await UserServices.getAllUsersFromDB();
@@ -57,22 +60,12 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+// Get an user
 const getSingleUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const parsedUserId = parseInt(userId);
     const result = await UserServices.getSingleUserFromDB(parsedUserId);
-
-    if (!result) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found',
-        error: {
-          code: 404,
-          description: 'User not found!',
-        },
-      });
-    }
 
     res.status(200).json({
       success: true,
@@ -84,44 +77,62 @@ const getSingleUser = async (req: Request, res: Response) => {
     res.status(500).json({
       success: false,
       message: err.message || 'Something went wrong! Failed to fetch users',
-      error: err,
+      error: {
+        code: err.message === 'User not found!' ? '404' : 500,
+        description: err.message,
+      },
     });
   }
 };
 
+// Update an user
 const updateUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const parsedUserId = parseInt(userId);
     const updateFields: UpdateFields = req.body;
-    const result = await UserServices.updateUserFieldsFromDB(
-      parsedUserId,
-      updateFields,
-    );
+    await UserServices.updateUserFieldsFromDB(parsedUserId, updateFields);
     const user = await UserServices.getSingleUserFromDB(parsedUserId);
 
-    if (result.matchedCount === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found',
-        error: {
-          code: 404,
-          description: 'User not found!',
-        },
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: 'User updated successfully!',
-        data: user,
-      });
-    }
+    res.status(200).json({
+      success: true,
+      message: 'User updated successfully!',
+      data: user,
+    });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     res.status(500).json({
       success: false,
       message: err.message || 'Something went wrong! Failed to fetch users',
-      error: err,
+      error: {
+        code: err.message === 'User not found!' ? '404' : 500,
+        description: err.message,
+      },
+    });
+  }
+};
+
+// Delete an user
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const parsedUserId = parseInt(userId);
+    await UserServices.deleteUserFromDB(parsedUserId);
+
+    res.status(200).json({
+      success: true,
+      message: 'User deleted successfully!',
+      data: null,
+    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message || 'Something went wrong! Failed to fetch users',
+      error: {
+        code: err.message === 'User not found!' ? '404' : 500,
+        description: err.message,
+      },
     });
   }
 };
@@ -131,4 +142,5 @@ export const UserControllers = {
   getAllUsers,
   getSingleUser,
   updateUser,
+  deleteUser,
 };

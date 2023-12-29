@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import {
   TAddress,
   TName,
-  TOrders,
+  TOrder,
   TUser,
   UserModel,
 } from './user/user.interface';
@@ -57,7 +57,7 @@ const addressSchema = new Schema<TAddress>(
   { _id: false },
 );
 
-const orderSchema = new Schema<TOrders>(
+const orderSchema = new Schema<TOrder>(
   {
     productName: {
       type: String,
@@ -124,7 +124,7 @@ const userSchema = new Schema<TUser, UserModel>(
   { versionKey: false },
 );
 
-// Pre save middleware
+// Pre save middleware for encrypting password
 userSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this;
@@ -132,7 +132,7 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-// Creating a custom static method
+// Creating a custom static method to check if user exists or not
 userSchema.statics.doesUserExists = async function (id: number) {
   const existingUser = await User.findOne({ userId: id });
   return existingUser;

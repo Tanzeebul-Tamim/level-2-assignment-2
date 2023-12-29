@@ -11,7 +11,7 @@ export type TAddress = {
   country: string;
 };
 
-export type TOrders = {
+export type TOrder = {
   productName: string;
   price: number;
   quantity: number;
@@ -27,10 +27,10 @@ export type TUser = {
   isActive: boolean;
   hobbies: string[];
   address: TAddress;
-  orders?: TOrders[];
+  orders?: TOrder[];
 };
 
-// For updating users
+// Type for updating users
 export type UpdateFields = Partial<Record<keyof TUser, TUser[keyof TUser]>>;
 
 // For creating static
