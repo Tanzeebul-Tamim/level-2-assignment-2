@@ -97,5 +97,5 @@ export const UserServices = {
   deleteUserFromDB,
   createOrderInUserInDB,
   retrieveOrderFromUserFromDB,
-  getTotalPrice
+  getTotalPrice,
 };
